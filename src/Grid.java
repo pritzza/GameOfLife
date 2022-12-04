@@ -28,24 +28,37 @@ public class Grid
 
     Cell getCell(final int index)
     {
-        final boolean isOutOfBounds = index < 0 || index >= size;
+        final boolean isInBounds = (index >= 0 && index < size);
 
-        if (isOutOfBounds)
+        if (isInBounds)
+            return cells[index];
+        else
         {
             if (DEBUG_MODE)
                 System.out.println("DEBUG: attempting to access out of bounds element");
             
             return defaultCell;
         }
-        else
-            return cells[index];
 
     } 
 
     Cell getCell(final int x, final int y)
     {
-        final int index = x + (y * width);
-        return getCell(index);
+        final boolean isInBounds = (x >= 0 && x < width);
+
+        if (isInBounds)
+        {
+            final int index = x + (y * width);
+            return getCell(index);
+        }
+        else    // if y is out of bounds, getCell(int) will catch that
+        {
+            if (DEBUG_MODE)
+                System.out.println("DEBUG: attempting to access out of bounds element");
+            
+            return defaultCell;
+        }
+
     }
 
     final int getWidth()    { return width;  }
