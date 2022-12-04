@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 //import CellState;
 
 //import static CellState;
@@ -9,16 +11,15 @@ public class Simulation
     private Grid currentGrid;
     private Grid nextGrid;
 
-    public Simulation(final int width, final int height)
+    public Simulation(final int width, final int height, final ArrayList<Integer> initialState)
     {
         currentGrid = new Grid(width, height);
         nextGrid = new Grid(width, height);
 
-        reset(currentGrid);
-        reset(nextGrid);
+        setInitialState(nextGrid, initialState);
     }
 
-    public void reset(Grid grid)
+    private void reset(Grid grid)
     {
         final CellState DEFAULT_STARTING_CELL_STATE = CellState.Dead;
 
@@ -27,25 +28,19 @@ public class Simulation
             Cell c = grid.getCell(i);
             c.setState(DEFAULT_STARTING_CELL_STATE);
         }
+    }
 
-        final int[] initiallyLiving = {
-        //  x, y
-        // a 3x3
-            3, 3,
-            4, 3,
-            5, 3,
-            3, 4,
-            //4, 4,
-            5, 4,
-            3, 5,
-            4, 5,
-            5, 5,
-        };
+    private void setInitialState(final Grid grid, final ArrayList<Integer> data)
+    {
+        // set all cells to default state
+        reset(grid);
 
-        for (int i = 0; i < initiallyLiving.length; i += 2)
+        // go through explicitly defined initial state data
+        // in current version, sets cells at given coordinates to be alive
+        for (int i = 0; i < data.size(); i += 2)
         {
-            final int x = initiallyLiving[i];
-            final int y = initiallyLiving[i+1];
+            final int x = data.get(i);
+            final int y = data.get(i+1);
 
             final Cell c = grid.getCell(x, y);
             c.setState(CellState.Alive);;
