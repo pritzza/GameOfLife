@@ -22,6 +22,6 @@ public class Renderer
             outputBuffer += cellSymbol;
         }
 
-        System.out.print(outputBuffer);
+        System.out.println(outputBuffer + '\n');
     }
 }

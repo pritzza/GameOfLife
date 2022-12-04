@@ -1,3 +1,5 @@
+import java.lang.Thread;
+
 public class GameOfLife
 {
     private Simulation simulation;
@@ -37,11 +39,17 @@ public class GameOfLife
 
     private void gameLoop()
     {
-        //while (isRunning)
+        while (isRunning)
         {
             simulation.tick();
 
             renderer.render(simulation);
+        
+            try
+            {
+                Thread.sleep(1000);
+            }
+            catch (Exception e) {}
         }
     }
 }

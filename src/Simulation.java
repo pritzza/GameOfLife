@@ -1,43 +1,142 @@
-import Cell.CellState;
+//import CellState;
 
-//import static Cell.CellState;
+//import static CellState;
 
 public class Simulation 
 {
-    private final Grid grid;
+    private final static boolean PRINT_DEBUG_DATA = false;
+
+    private Grid currentGrid;
+    private Grid nextGrid;
 
     public Simulation(final int width, final int height)
     {
-        grid = new Grid(width, height);
+        currentGrid = new Grid(width, height);
+        nextGrid = new Grid(width, height);
 
-        reset();
+        reset(currentGrid);
+        reset(nextGrid);
     }
 
-    public void reset()
+    public void reset(Grid grid)
     {
-        // todo: figure out how to import enum so "Cell." can be dropped
-        final Cell.CellState DEFAULT_CELL_STATE = Cell.CellState.Dead;
+        final CellState DEFAULT_STARTING_CELL_STATE = CellState.Dead;
 
         for (int i = 0; i < grid.getSize(); ++i)
         {
             Cell c = grid.getCell(i);
-            c.setState(DEFAULT_CELL_STATE);
-
-            if (i == 12)
-                c.setState(Cell.CellState.Alive);
+            c.setState(DEFAULT_STARTING_CELL_STATE);
         }
 
+        final int[] initiallyLiving = {
+        //  x, y
+        // a 3x3
+            3, 3,
+            4, 3,
+            5, 3,
+            3, 4,
+            //4, 4,
+            5, 4,
+            3, 5,
+            4, 5,
+            5, 5,
+        };
+
+        for (int i = 0; i < initiallyLiving.length; i += 2)
+        {
+            final int x = initiallyLiving[i];
+            final int y = initiallyLiving[i+1];
+
+            final Cell c = grid.getCell(x, y);
+            c.setState(CellState.Alive);;
+        }
     }
 
     // progresses simulation to next state
     public void tick()
     {
+        swapGrids();
 
+        // go through every cell and apply the game of life's rules
+        for (int x = 0; x < currentGrid.getWidth(); ++x)
+            for (int y = 0; y < currentGrid.getHeight(); ++y)
+            {
+                final int neighbors = countNeighbors(x, y);
+
+                if (PRINT_DEBUG_DATA)
+                    if (neighbors > 0)
+                        System.out.println("(" + x + ", " + y + "): has " + neighbors + " neighbors");
+
+                final Cell cell = currentGrid.getCell(x, y);
+                final CellState currentState = cell.getState();
+
+                CellState nextState = CellState.ERROR;
+
+                switch (currentState)
+                {
+                    case Alive:
+                        if (neighbors == 2 || neighbors == 3)
+                            nextState = CellState.Alive;
+                        else
+                            nextState = CellState.Dead;
+                    break;
+
+                    case Dead:
+                        if (neighbors == 3)
+                            nextState = CellState.Alive;
+                        else
+                            nextState = CellState.Dead;
+                    break;
+
+                    default:
+                        System.out.println("ERROR: Unknown cell state");
+                }
+
+                // set state of next generation's cell
+                final Cell nextCell = nextGrid.getCell(x, y);
+                nextCell.setState(nextState);
+            }
     }
     
+    private void swapGrids()
+    {
+        final Grid temp = currentGrid;
+        currentGrid = nextGrid;
+        nextGrid = temp;
+    }
+
+    // returns number of living adjacent cells
+    // (counts out of bounds cells as dead)
+    final private int countNeighbors(final int x0, final int y0)
+    {
+        int neighborCount = 0;
+
+        for (int x = -1; x < 2; ++x)
+            for (int y = -1; y < 2; ++y)
+            {
+                // don't include cell for which we are counting the neighbors of
+                if (x != 0 || y != 0)
+                {
+                    final int nX = x0 + x;  // neighbor x
+                    final int nY = y0 + y;  // neighbor y
+
+                    final Cell neighbor = currentGrid.getCell(nX, nY);
+                    final boolean isNeighborAlive = neighbor.getState() == CellState.Alive;
+                                    
+                    if (isNeighborAlive)
+                        neighborCount++;
+
+                    if (PRINT_DEBUG_DATA)
+                        System.out.println("(" + nX + ", " + nY + "): " + neighbor.getState());
+                }
+            }
+        
+        return neighborCount;
+    }
+
     final Grid getGrid()
     {
-        return grid;
+        return currentGrid;
     }
 
 }

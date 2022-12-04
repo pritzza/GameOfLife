@@ -1,16 +1,10 @@
 public class Cell 
-{
-    public enum CellState
-    {
-        Alive,
-        Dead
-    };
-
+{    
     private CellState state;
 
     public Cell()
     {
-        state = CellState.Dead;
+        state = CellState.ERROR;
     }
 
     public void setState(final CellState s)
@@ -31,7 +25,7 @@ public class Cell
             case Dead:      return '.';
         }
 
-        final char INVALID_SYMBOL = 'I';
+        final char INVALID_SYMBOL = 'E';
         return INVALID_SYMBOL;
     }    
 }
