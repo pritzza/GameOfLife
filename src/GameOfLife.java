@@ -32,9 +32,6 @@ public class GameOfLife
         // idea: prompt user to enter filename
 
         isRunning = true;
-
-        loadStartingState();
-
         programLoop();
     }
 
@@ -49,17 +46,6 @@ public class GameOfLife
                 case 2: playSimulation(); break;
                 case 3: isRunning = false; break;
             }
-            // enter what you want to do
-            // create simulation
-                // create file (if file exists, overwrite i guess)
-                // enter data and shit for it
-                // ret
-            // play simulation
-                // enter a simulation to load (enter file name)
-                // enter number of steps you want to see
-                // ret
-            // quit
-                // isRunning = false;
         }
     }
 
@@ -156,12 +142,49 @@ public class GameOfLife
 
     private void playSimulation()
     {
-                        // enter a simulation to load (enter file name)
-                // enter number of steps you want to see
-                // ret
+        // enter a simulation to load (enter file name)
+        System.out.println("Enter simulation name: ");
+        
+        final Scanner scanner = new Scanner(System.in);
+        final String simulationFileName = scanner.nextLine();
+        
+        this.simulation = loadSimulation(simulationFileName);
+
+        if (this.simulation == null)
+            System.out.println("Error: Couldn't load simulation");
+
+        // enter number of steps you want to see
+        System.out.println("Enter at which generation to start showing simuatlion");
+        int simStart = -1;
+
+        // while input is invalid
+        while (simStart < 0)
+            simStart = scanner.nextInt();
+        
+        simulationStepBeginning = simStart;
+
+        System.out.println("Enter at which generation to end simulation");
+        int simStop = -1;
+        
+        // while input is invalid
+        while (simStop < 0)
+            simStop = scanner.nextInt();
+            
+        simulationStepEnd = simStop;
+            
+        System.out.println("Enter simulation display speed (ms per generation)");
+        int simSpeed = -1;
+        
+        // while input is invalid
+        while (simSpeed < 0)
+            simSpeed = scanner.nextInt();
+            
+        simulationDisplaySpeed = simSpeed;
+
+        simulationLoop();
     }
 
-    private void loadStartingState()
+    private Simulation loadSimulation(final String simulationFileName)
     {
         // enter filename
         // first 2 are simulation dimensions
@@ -176,7 +199,7 @@ public class GameOfLife
         // with each line just update state of cells in simulation's grid
         try 
         {
-            File myfile = new File(SIMULATION_SAVES_DIR + "/test.txt");
+            File myfile = new File(SIMULATION_SAVES_DIR + simulationFileName);
             Scanner simulationDataFile = new Scanner(myfile);
 
             int simulationWidth = -1;
@@ -214,7 +237,7 @@ public class GameOfLife
         }
             simulationDataFile.close();
 
-            simulation = new Simulation(simulationWidth, simulationHeight, cellData);
+            return new Simulation(simulationWidth, simulationHeight, cellData);
 
         }
         catch (FileNotFoundException e) 
@@ -222,25 +245,32 @@ public class GameOfLife
             System.out.println("Error: Couldn't find file.");
             e.printStackTrace();
         }        
+
+        return null;
     }
 
     private void simulationLoop()
     {
-        for(int i = 0; i < simulationStepEnd; ++i)
+        if (simulation == null)
+            System.out.println("Error: couldn't play simulation"); 
+        else
         {
-            simulation.tick();
-
-            final boolean shouldDisplay = i >= simulationStepBeginning;
-
-            if (shouldDisplay)
+            for (int i = 0; i < simulationStepEnd; ++i)
             {
-                renderer.render(simulation);
-        
-                try
+                simulation.tick();
+
+                final boolean shouldDisplay = i >= simulationStepBeginning;
+
+                if (shouldDisplay)
                 {
-                    Thread.sleep(simulationDisplaySpeed);
+                    renderer.render(simulation);
+        
+                    try
+                    {
+                        Thread.sleep(simulationDisplaySpeed);
+                    }
+                    catch (Exception e) {}
                 }
-                catch (Exception e) {}
             }
         }
     }
