@@ -17,14 +17,9 @@ public class GameOfLife
     private final String SIMULATION_SAVES_DIR = "simulation saves/";
 
     private Simulation simulation;
-    private Renderer renderer;
+    private Renderer renderer = new Renderer();
 
     private static boolean isRunning = false;
-
-    public GameOfLife(final int simulationWidth, final int simulationHeight)
-    {
-        renderer = new Renderer();
-    }
 
     public void start()
     {

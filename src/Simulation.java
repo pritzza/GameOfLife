@@ -1,9 +1,5 @@
 import java.util.ArrayList;
 
-//import CellState;
-
-//import static CellState;
-
 public class Simulation 
 {
     private final static boolean PRINT_DEBUG_DATA = false;
@@ -19,7 +15,7 @@ public class Simulation
         setInitialState(nextGrid, initialState);
     }
 
-    private void reset(Grid grid)
+    private void reset(final Grid grid)
     {
         final CellState DEFAULT_STARTING_CELL_STATE = CellState.Dead;
 
@@ -58,9 +54,11 @@ public class Simulation
             {
                 final int neighbors = countNeighbors(x, y);
 
+                // Debugging code ////////////////
                 if (PRINT_DEBUG_DATA)
                     if (neighbors > 0)
                         System.out.println("(" + x + ", " + y + "): has " + neighbors + " neighbors");
+                //////////////////////////////////
 
                 final Cell cell = currentGrid.getCell(x, y);
                 final CellState currentState = cell.getState();
@@ -121,8 +119,10 @@ public class Simulation
                     if (isNeighborAlive)
                         neighborCount++;
 
+                    // Debugging code ////////////////
                     if (PRINT_DEBUG_DATA)
                         System.out.println("(" + nX + ", " + nY + "): " + neighbor.getState());
+                    //////////////////////////////////
                 }
             }
         

@@ -8,15 +8,14 @@ public class Grid
 
     private final int width;
     private final int height;
-    private final int size;
 
-    private Cell[] cells;
+    private final Cell[] cells;
 
     public Grid(final int width, final int height)
     {
         this.width = width;
         this.height = height;
-        this.size = width * height;
+        final int size = width * height;
 
         this.cells = new Cell[size];
         
@@ -28,7 +27,7 @@ public class Grid
 
     Cell getCell(final int index)
     {
-        final boolean isInBounds = (index >= 0 && index < size);
+        final boolean isInBounds = (index >= 0 && index < cells.length);
 
         if (isInBounds)
             return cells[index];
@@ -61,7 +60,7 @@ public class Grid
 
     }
 
-    final int getWidth()    { return width;  }
-    final int getHeight()   { return height; }
-    final int getSize()     { return size;   }
+    final int getWidth()    { return width;        }
+    final int getHeight()   { return height;       }
+    final int getSize()     { return cells.length; }
 }
